@@ -4,6 +4,7 @@
 
   packages = [
     pkgs.nodejs_20
+    pkgs.corepack
     pkgs.jdk17
     pkgs.unzip # Often useful for Android
   ];
