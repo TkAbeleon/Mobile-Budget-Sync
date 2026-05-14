@@ -1,19 +1,19 @@
 { pkgs, ... }: {
-  # Change "stable" par une version spécifique comme "stable-24.11"
-  channel = "stable-24.11"; 
+  # Change "stable" to a specific version like "stable-24.11"
+  channel = "unstable"; 
 
   packages = [
     pkgs.nodejs_20
     pkgs.jdk17
-    pkgs.unzip # Souvent utile pour Android
+    pkgs.unzip # Often useful for Android
   ];
 
   idx.previews = {
     enable = true;
     previews = {
       android = {
-        # S'assure que la commande pointe bien vers ton script de démarrage
-        command = [ "npx" "react-native" "run-android" "--no-packager" ];
+        # Make sure the command points to your start script
+        command = [ "npx" "expo" "start" "--android" "--tunnel" ];
         manager = "android";
       };
     };

@@ -1,0 +1,37 @@
+name: Android Build
+on:
+  push:
+    branches: [ main ] # Se déclenche quand tu pousses sur la branche main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration de Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installation des dépendances
+        run: npm install
+
+      - name: Donner les permissions au script Gradle
+        run: chmod +x android/gradlew
+
+      - name: Build de l'APK (Release)
+        run: cd android && ./gradlew assembleRelease
+
+      - name: Sauvegarder l'APK (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
