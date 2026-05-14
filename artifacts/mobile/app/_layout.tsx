@@ -14,6 +14,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 SplashScreen.preventAutoHideAsync();
@@ -29,7 +30,12 @@ const queryClient = new QueryClient({
 
 function RootLayoutNav() {
   const { user, loading } = useAuth();
+  const { theme } = useTheme();
   const segments = useSegments();
+
+  const isDark = theme === "dark";
+  const headerBg = isDark ? "#141828" : "#FFFFFF";
+  const headerText = isDark ? "#F0F3FF" : "#1A1F35";
 
   useEffect(() => {
     if (loading) return;
@@ -51,8 +57,8 @@ function RootLayoutNav() {
           presentation: "modal",
           headerShown: true,
           title: "Mon profil",
-          headerStyle: { backgroundColor: "#141828" },
-          headerTintColor: "#F0F3FF",
+          headerStyle: { backgroundColor: headerBg },
+          headerTintColor: headerText,
           headerShadowVisible: false,
         }}
       />
@@ -79,15 +85,17 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <KeyboardProvider>
-                <RootLayoutNav />
-              </KeyboardProvider>
-            </GestureHandlerRootView>
-          </AuthProvider>
-        </QueryClientProvider>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <KeyboardProvider>
+                  <RootLayoutNav />
+                </KeyboardProvider>
+              </GestureHandlerRootView>
+            </AuthProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
   );

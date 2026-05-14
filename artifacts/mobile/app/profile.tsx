@@ -18,6 +18,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { useColors } from '@/hooks/useColors';
 import { api } from '@/lib/api';
 import type { UserInfo } from '@/lib/types';
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { user, logout, setUser } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
@@ -230,6 +232,42 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.themeRow}>
+            <View style={styles.themeInfo}>
+              <Feather name={isDark ? 'moon' : 'sun'} size={18} color={isDark ? colors.blue : colors.amber} />
+              <View>
+                <Text style={[styles.themeTitle, { color: colors.t1 }]}>
+                  {isDark ? 'Thème sombre' : 'Thème clair'}
+                </Text>
+                <Text style={[styles.themeSub, { color: colors.t3 }]}>
+                  {isDark ? 'Basculer vers le thème clair' : 'Basculer vers le thème sombre'}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                toggleTheme();
+              }}
+              style={[
+                styles.toggle,
+                {
+                  backgroundColor: isDark ? colors.blue : colors.amber,
+                },
+              ]}
+              activeOpacity={0.8}
+            >
+              <View
+                style={[
+                  styles.toggleThumb,
+                  { transform: [{ translateX: isDark ? 20 : 0 }] },
+                ]}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <TouchableOpacity
           style={[styles.logoutBtn, { backgroundColor: colors.redDim, borderColor: 'rgba(255,94,94,0.2)' }]}
           onPress={handleLogout}
@@ -341,5 +379,39 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 14,
     fontWeight: '600',
+  },
+  themeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  themeInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  themeTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  themeSub: {
+    fontSize: 12,
+  },
+  toggle: {
+    width: 48,
+    height: 28,
+    borderRadius: 14,
+    padding: 4,
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  toggleThumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
   },
 });
