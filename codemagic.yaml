@@ -1,3 +1,4 @@
+# Configuration Codemagic pour BudgetSmart (Mobile-Budget-Sync)
 workflows:
   android-release:
     name: BudgetSmart Android APK
@@ -5,7 +6,7 @@ workflows:
     environment:
       node: 24
       groups:
-        - expo_credentials
+        - expo_credentials # Assure-toi d'avoir créé ce groupe dans l'UI Codemagic
       vars:
         EXPO_PROJECT_DIR: artifacts/mobile
         COREPACK_ENABLE_STRICT: "0"
@@ -16,31 +17,40 @@ workflows:
         - pattern: main
           include: true
     scripts:
-      - name: Enable pnpm via corepack
+      - name: Configuration de pnpm (Corepack)
         script: |
           corepack enable
           corepack prepare pnpm@latest --activate
           pnpm --version
-      - name: Install dependencies
+
+      - name: Installation des dépendances
         script: |
-          pnpm install --frozen-lockfile
-      - name: Install EAS CLI
+          # On utilise --ignore-scripts pour bypasser le message "Use pnpm instead" 
+          # qui fait échouer le build à cause du script preinstall
+          pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Installation de EAS CLI
         script: |
           npm install -g eas-cli --force
-      - name: Expo login
+
+      - name: Authentification Expo
         script: |
           cd $EXPO_PROJECT_DIR
+          # Utilise les variables EXPO_TOKEN ou EXPO_APPLE_ID définies dans ton groupe de variables
           eas whoami || eas login --non-interactive
-      - name: Build Android APK
+
+      - name: Build de l'APK via EAS
         script: |
           cd $EXPO_PROJECT_DIR
+          # On lance le build en mode non-interactif
           eas build --platform android --profile preview --non-interactive --no-wait
+
     artifacts:
       - artifacts/mobile/**/*.apk
       - artifacts/mobile/**/*.aab
 
   android-local-build:
-    name: BudgetSmart Android (local Expo export)
+    name: BudgetSmart Android (Local Export)
     max_build_duration: 60
     environment:
       node: 24
@@ -48,14 +58,14 @@ workflows:
         EXPO_PROJECT_DIR: artifacts/mobile
         COREPACK_ENABLE_STRICT: "0"
     scripts:
-      - name: Enable pnpm via corepack
+      - name: Enable pnpm
         script: |
           corepack enable
           corepack prepare pnpm@latest --activate
       - name: Install dependencies
         script: |
-          pnpm install --frozen-lockfile
-      - name: Export Expo web bundle
+          pnpm install --frozen-lockfile --ignore-scripts
+      - name: Export Web Bundle (Optionnel)
         script: |
           cd $EXPO_PROJECT_DIR
           pnpm expo export --platform web --output-dir dist
