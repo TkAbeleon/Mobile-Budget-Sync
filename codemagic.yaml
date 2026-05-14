@@ -15,15 +15,12 @@ workflows:
         - pattern: main
           include: true
     scripts:
-      - name: Install pnpm
-        script: |
-          npm install -g pnpm
       - name: Install dependencies
         script: |
           pnpm install
       - name: Install EAS CLI
         script: |
-          npm install -g eas-cli
+          npm install -g eas-cli --force
       - name: Expo login
         script: |
           cd $EXPO_PROJECT_DIR
@@ -44,9 +41,6 @@ workflows:
       vars:
         EXPO_PROJECT_DIR: artifacts/mobile
     scripts:
-      - name: Install pnpm
-        script: |
-          npm install -g pnpm
       - name: Install dependencies
         script: |
           pnpm install
