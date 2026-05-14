@@ -1,8 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { useMutation } from '@tanstack/react-query';
-import { Link, router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import React, { useState } from 'react';
+import { Link, router } from 'expo-router';
+import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -26,14 +26,14 @@ export default function LoginScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
+  const passwordRef = useRef<TextInput>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: () =>
-      api.post<AuthResponse>('/auth/login', { email, password }),
+    mutationFn: () => api.post<AuthResponse>('/auth/login', { email, password }),
     onSuccess: async (data) => {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       await login(data.token, data.user);
@@ -45,100 +45,111 @@ export default function LoginScreen() {
     },
   });
 
+  const canSubmit = email.includes('@') && password.length >= 1;
+
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={[styles.screen, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={[
-          styles.container,
-          { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 24 },
-        ]}
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 32, paddingBottom: insets.bottom + 32 }]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.logoRow}>
-          <View style={[styles.logoIcon, { backgroundColor: colors.primaryDim, borderColor: 'rgba(14,224,122,0.25)' }]}>
-            <Feather name="dollar-sign" size={24} color={colors.primary} />
+        {/* Logo */}
+        <View style={styles.logoSection}>
+          <View style={[styles.logoRing, { borderColor: colors.primary + '30', backgroundColor: colors.primaryDim }]}>
+            <View style={[styles.logoInner, { backgroundColor: colors.primary }]}>
+              <Feather name="dollar-sign" size={26} color="#0C0F1A" />
+            </View>
           </View>
-          <Text style={[styles.logoText, { color: colors.t1 }]}>
+          <Text style={[styles.appName, { color: colors.t1 }]}>
             Budget<Text style={{ color: colors.primary }}>Smart</Text>
           </Text>
+          <Text style={[styles.appTagline, { color: colors.t3 }]}>Gérez vos finances intelligemment</Text>
         </View>
 
-        <View style={styles.card}>
-          <View style={[styles.cardInner, { backgroundColor: colors.surface, borderColor: colors.border2 }]}>
-            <Text style={[styles.title, { color: colors.t1 }]}>Bienvenue</Text>
-            <Text style={[styles.subtitle, { color: colors.t2 }]}>
-              Connectez-vous pour gérer votre budget
-            </Text>
+        {/* Card */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border2 }]}>
+          <Text style={[styles.cardTitle, { color: colors.t1 }]}>Connexion</Text>
 
-            <View style={styles.fields}>
-              <View style={styles.fieldGroup}>
-                <Text style={[styles.label, { color: colors.t2 }]}>ADRESSE EMAIL</Text>
-                <TextInput
-                  style={[styles.input, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.t1 }]}
-                  placeholderTextColor={colors.t3}
-                  placeholder="alice@exemple.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </View>
-
-              <View style={styles.fieldGroup}>
-                <Text style={[styles.label, { color: colors.t2 }]}>MOT DE PASSE</Text>
-                <View style={styles.passwordWrap}>
-                  <TextInput
-                    style={[styles.input, styles.passwordInput, { backgroundColor: colors.surface2, borderColor: colors.border, color: colors.t1 }]}
-                    placeholderTextColor={colors.t3}
-                    placeholder="••••••••"
-                    secureTextEntry={!showPassword}
-                    value={password}
-                    onChangeText={setPassword}
-                  />
-                  <TouchableOpacity
-                    style={styles.eyeBtn}
-                    onPress={() => setShowPassword((v) => !v)}
-                    hitSlop={8}
-                  >
-                    <Feather
-                      name={showPassword ? 'eye-off' : 'eye'}
-                      size={16}
-                      color={colors.t3}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+          {/* Email */}
+          <View style={styles.fieldGroup}>
+            <View style={[styles.inputWrap, { backgroundColor: colors.surface2, borderColor: colors.border }]}>
+              <Feather name="mail" size={16} color={colors.t3} style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { color: colors.t1 }]}
+                placeholderTextColor={colors.t3}
+                placeholder="Email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="next"
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                value={email}
+                onChangeText={setEmail}
+              />
             </View>
+          </View>
 
-            <TouchableOpacity
-              style={[styles.loginBtn, { backgroundColor: colors.primary, opacity: mutation.isPending ? 0.8 : 1 }]}
-              onPress={() => mutation.mutate()}
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <ActivityIndicator color="#0C0F1A" />
-              ) : (
-                <Text style={styles.loginBtnText}>Se connecter</Text>
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.footer}>
-              <Text style={[styles.footerText, { color: colors.t2 }]}>
-                Pas encore de compte ?{' '}
-              </Text>
-              <Link href="/(auth)/register" asChild>
-                <TouchableOpacity>
-                  <Text style={[styles.footerLink, { color: colors.primary }]}>
-                    Créer un compte
-                  </Text>
-                </TouchableOpacity>
-              </Link>
+          {/* Password */}
+          <View style={styles.fieldGroup}>
+            <View style={[styles.inputWrap, { backgroundColor: colors.surface2, borderColor: colors.border }]}>
+              <Feather name="lock" size={16} color={colors.t3} style={styles.inputIcon} />
+              <TextInput
+                ref={passwordRef}
+                style={[styles.input, { color: colors.t1 }]}
+                placeholderTextColor={colors.t3}
+                placeholder="Mot de passe"
+                secureTextEntry={!showPassword}
+                returnKeyType="go"
+                onSubmitEditing={() => canSubmit && mutation.mutate()}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword((v) => !v)}
+                hitSlop={12}
+                style={styles.eyeBtn}
+              >
+                <Feather name={showPassword ? 'eye-off' : 'eye'} size={16} color={colors.t3} />
+              </TouchableOpacity>
             </View>
+          </View>
+
+          {/* Submit */}
+          <TouchableOpacity
+            style={[
+              styles.submitBtn,
+              { backgroundColor: canSubmit ? colors.primary : colors.surface2, borderColor: colors.border },
+              mutation.isPending && { opacity: 0.8 },
+            ]}
+            onPress={() => mutation.mutate()}
+            disabled={mutation.isPending || !canSubmit}
+            activeOpacity={0.85}
+          >
+            {mutation.isPending ? (
+              <ActivityIndicator color={canSubmit ? '#0C0F1A' : colors.t3} />
+            ) : (
+              <>
+                <Text style={[styles.submitText, { color: canSubmit ? '#0C0F1A' : colors.t3 }]}>
+                  Se connecter
+                </Text>
+                <Feather name="arrow-right" size={16} color={canSubmit ? '#0C0F1A' : colors.t3} />
+              </>
+            )}
+          </TouchableOpacity>
+
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+          <View style={styles.registerRow}>
+            <Text style={[styles.registerText, { color: colors.t2 }]}>Pas encore de compte ?</Text>
+            <Link href="/(auth)/register" asChild>
+              <TouchableOpacity hitSlop={8}>
+                <Text style={[styles.registerLink, { color: colors.primary }]}>Créer un compte →</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
       </ScrollView>
@@ -147,104 +158,29 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    justifyContent: 'center',
-  },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 40,
-    justifyContent: 'center',
-  },
-  logoIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-  },
-  card: {
-    width: '100%',
-  },
-  cardInner: {
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 28,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 14,
-    marginBottom: 28,
-    lineHeight: 20,
-  },
-  fields: {
-    gap: 16,
-    marginBottom: 24,
-  },
-  fieldGroup: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 13,
-    fontSize: 14,
-  },
-  passwordWrap: {
-    position: 'relative',
-  },
-  passwordInput: {
-    paddingRight: 44,
-  },
-  eyeBtn: {
-    position: 'absolute',
-    right: 14,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-  },
-  loginBtn: {
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  loginBtnText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#0C0F1A',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  footerText: {
-    fontSize: 13,
-  },
-  footerLink: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
+  screen: { flex: 1 },
+  scroll: { flexGrow: 1, paddingHorizontal: 24, justifyContent: 'center', gap: 32 },
+
+  logoSection: { alignItems: 'center', gap: 10 },
+  logoRing: { width: 80, height: 80, borderRadius: 40, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  logoInner: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  appName: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
+  appTagline: { fontSize: 14 },
+
+  card: { borderRadius: 20, borderWidth: 1, padding: 24, gap: 14 },
+  cardTitle: { fontSize: 20, fontWeight: '700', marginBottom: 4 },
+
+  fieldGroup: {},
+  inputWrap: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 12, paddingHorizontal: 14 },
+  inputIcon: { marginRight: 10 },
+  input: { flex: 1, paddingVertical: 13, fontSize: 15 },
+  eyeBtn: { padding: 4 },
+
+  submitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12, paddingVertical: 14, borderWidth: 1, marginTop: 4 },
+  submitText: { fontSize: 15, fontWeight: '700' },
+
+  divider: { height: 1 },
+  registerRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  registerText: { fontSize: 13 },
+  registerLink: { fontSize: 13, fontWeight: '700' },
 });

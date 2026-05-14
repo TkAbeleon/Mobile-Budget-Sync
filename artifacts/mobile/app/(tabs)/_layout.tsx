@@ -1,11 +1,11 @@
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
-import { router, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { SymbolView } from 'expo-symbols';
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View, useColorScheme } from 'react-native';
+import { Platform, StyleSheet, View, useColorScheme } from 'react-native';
 
 import { useColors } from '@/hooks/useColors';
 
@@ -14,7 +14,7 @@ function NativeTabLayout() {
     <NativeTabs>
       <NativeTabs.Trigger name="index">
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />
-        <Label>Dashboard</Label>
+        <Label>Tableau de bord</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="expenses">
         <Icon sf={{ default: 'arrow.down.circle', selected: 'arrow.down.circle.fill' }} />
@@ -36,19 +36,6 @@ function NativeTabLayout() {
   );
 }
 
-function ProfileButton() {
-  const colors = useColors();
-  return (
-    <TouchableOpacity
-      onPress={() => router.push('/profile')}
-      style={[styles.profileBtn, { backgroundColor: colors.primaryDim, borderColor: 'rgba(14,224,122,0.2)' }]}
-      hitSlop={8}
-    >
-      <Feather name="user" size={16} color={colors.primary} />
-    </TouchableOpacity>
-  );
-}
-
 function ClassicTabLayout() {
   const colors = useColors();
   const colorScheme = useColorScheme();
@@ -56,53 +43,46 @@ function ClassicTabLayout() {
   const isIOS = Platform.OS === 'ios';
   const isWeb = Platform.OS === 'web';
 
+  const webTop = isWeb ? 67 : 0;
+
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.t3,
-        headerStyle: {
-          backgroundColor: colors.surface,
-        },
-        headerTintColor: colors.t1,
-        headerShadowVisible: false,
-        headerRight: () => <ProfileButton />,
         tabBarStyle: {
           position: 'absolute',
           backgroundColor: isIOS ? 'transparent' : colors.surface,
           borderTopWidth: 1,
           borderTopColor: colors.border,
           elevation: 0,
-          ...(isWeb ? { height: 84 } : {}),
+          height: isWeb ? 84 : 58,
+          paddingTop: isWeb ? 0 : 4,
         },
         tabBarBackground: () =>
           isIOS ? (
             <BlurView
-              intensity={80}
-              tint={isDark ? 'dark' : 'systemChromeMaterial'}
+              intensity={90}
+              tint={isDark ? 'dark' : 'light'}
               style={StyleSheet.absoluteFill}
             />
           ) : isWeb ? (
             <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.surface }]} />
           ) : null,
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: '600',
-        },
-        headerRightContainerStyle: {
-          paddingRight: 16,
-        },
+        tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginBottom: 2 },
+        tabBarIconStyle: { marginTop: 2 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: 'Tableau de bord',
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="house" tintColor={color} size={22} />
+              <SymbolView name="house.fill" tintColor={color} size={22} />
             ) : (
-              <Feather name="home" size={20} color={color} />
+              <Feather name="home" size={21} color={color} />
             ),
         }}
       />
@@ -112,9 +92,9 @@ function ClassicTabLayout() {
           title: 'Dépenses',
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="arrow.down.circle" tintColor={color} size={22} />
+              <SymbolView name="arrow.down.circle.fill" tintColor={color} size={22} />
             ) : (
-              <Feather name="trending-down" size={20} color={color} />
+              <Feather name="trending-down" size={21} color={color} />
             ),
         }}
       />
@@ -124,9 +104,9 @@ function ClassicTabLayout() {
           title: 'Revenus',
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="arrow.up.circle" tintColor={color} size={22} />
+              <SymbolView name="arrow.up.circle.fill" tintColor={color} size={22} />
             ) : (
-              <Feather name="trending-up" size={20} color={color} />
+              <Feather name="trending-up" size={21} color={color} />
             ),
         }}
       />
@@ -136,21 +116,21 @@ function ClassicTabLayout() {
           title: 'Épargne',
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="banknote" tintColor={color} size={22} />
+              <SymbolView name="banknote.fill" tintColor={color} size={22} />
             ) : (
-              <Feather name="save" size={20} color={color} />
+              <Feather name="save" size={21} color={color} />
             ),
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Assistant',
+          title: 'Assistant IA',
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="bubble.left" tintColor={color} size={22} />
+              <SymbolView name="bubble.left.fill" tintColor={color} size={22} />
             ) : (
-              <Feather name="message-circle" size={20} color={color} />
+              <Feather name="message-circle" size={21} color={color} />
             ),
         }}
       />
@@ -159,19 +139,8 @@ function ClassicTabLayout() {
 }
 
 export default function TabLayout() {
-  if (isLiquidGlassAvailable()) {
-    return <NativeTabLayout />;
-  }
+  if (isLiquidGlassAvailable()) return <NativeTabLayout />;
   return <ClassicTabLayout />;
 }
 
-const styles = StyleSheet.create({
-  profileBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const styles = StyleSheet.create({});
