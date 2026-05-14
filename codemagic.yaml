@@ -1,0 +1,58 @@
+workflows:
+  android-release:
+    name: BudgetSmart Android APK
+    max_build_duration: 60
+    environment:
+      node: 24
+      groups:
+        - expo_credentials
+      vars:
+        EXPO_PROJECT_DIR: artifacts/mobile
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install pnpm
+        script: |
+          npm install -g pnpm
+      - name: Install dependencies
+        script: |
+          pnpm install
+      - name: Install EAS CLI
+        script: |
+          npm install -g eas-cli
+      - name: Expo login
+        script: |
+          cd $EXPO_PROJECT_DIR
+          eas whoami || eas login --non-interactive
+      - name: Build Android APK
+        script: |
+          cd $EXPO_PROJECT_DIR
+          eas build --platform android --profile preview --non-interactive --no-wait
+    artifacts:
+      - artifacts/mobile/**/*.apk
+      - artifacts/mobile/**/*.aab
+
+  android-local-build:
+    name: BudgetSmart Android (local Expo export)
+    max_build_duration: 60
+    environment:
+      node: 24
+      vars:
+        EXPO_PROJECT_DIR: artifacts/mobile
+    scripts:
+      - name: Install pnpm
+        script: |
+          npm install -g pnpm
+      - name: Install dependencies
+        script: |
+          pnpm install
+      - name: Export Expo web bundle
+        script: |
+          cd $EXPO_PROJECT_DIR
+          pnpm expo export --platform web --output-dir dist
+    artifacts:
+      - artifacts/mobile/dist/**
