@@ -18,7 +18,17 @@
     },
     "android": {
       "backgroundColor": "#0C0F1A",
-      "package": "com.randriamanantenatsikynyantsa.mobile"
+      "package": "com.randriamanantenatsikynyantsa.mobile",
+      "config": {
+        "googleMaps": {
+          "apiKey": "..."
+        }
+      },
+      "minSdkVersion": 24,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "web": {
       "favicon": "./assets/images/icon.png"
@@ -42,6 +52,7 @@
         "projectId": "a040ed70-90de-4a15-bf1a-079175adc1c3"
       }
     },
-    "owner": "tsikynyantsa"
+    "owner": "tsikynyantsa",
+    "jsEngine": "jsc"
   }
 }
