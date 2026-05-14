@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BudgetSmart</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0C0F1A;
+  --surface:#141828;
+  --surface2:#1C2235;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --primary:#0EE07A;
+  --primary-dim:rgba(14,224,122,0.12);
+  --primary-dim2:rgba(14,224,122,0.2);
+  --amber:#FFB547;
+  --amber-dim:rgba(255,181,71,0.12);
+  --red:#FF5E5E;
+  --red-dim:rgba(255,94,94,0.12);
+  --blue:#5B8AF4;
+  --blue-dim:rgba(91,138,244,0.12);
+  --purple:#A78BFA;
+  --purple-dim:rgba(167,139,250,0.12);
+  --t1:#F0F3FF;
+  --t2:#8A90AB;
+  --t3:#555B74;
+  --radius:10px;
+  --radius-lg:14px;
+  --sidebar:230px;
+  --font:'Outfit',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden}
+.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(14,224,122,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(91,138,244,0.06) 0%,transparent 50%)}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:48px 44px;width:420px;position:relative;z-index:1}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.login-logo .logo-icon{width:40px;height:40px;background:var(--primary-dim);border:1px solid rgba(14,224,122,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.login-logo .logo-icon svg{width:22px;height:22px}
+.login-logo span{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.login-logo span em{color:var(--primary);font-style:normal}
+.login-card h1{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px}
+.login-card p{color:var(--t2);margin-bottom:32px;font-size:14px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.form-group input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;color:var(--t1);font-family:var(--font);font-size:14px;outline:none;transition:border-color 0.2s}
+.form-group input:focus{border-color:rgba(14,224,122,0.35)}
+.form-group input::placeholder{color:var(--t3)}
+.btn-primary{width:100%;background:var(--primary);color:#0C0F1A;border:none;border-radius:var(--radius);padding:13px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.15s,transform 0.1s;letter-spacing:0.2px;margin-top:8px}
+.btn-primary:hover{opacity:0.9}
+.btn-primary:active{transform:scale(0.99)}
+.login-footer{text-align:center;margin-top:24px;font-size:13px;color:var(--t2)}
+.login-footer a{color:var(--primary);text-decoration:none;font-weight:500}
+.login-divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--t3);font-size:12px}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── APP LAYOUT ── */
+#app{display:none;height:100vh;overflow:hidden}
+.app-layout{display:flex;height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-header{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo{display:flex;align-items:center;gap:9px}
+.sidebar-logo .logo-icon{width:32px;height:32px;background:var(--primary-dim);border:1px solid rgba(14,224,122,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.sidebar-logo .logo-icon svg{width:18px;height:18px}
+.sidebar-logo span{font-size:16px;font-weight:700;letter-spacing:-0.3px}
+.sidebar-logo span em{color:var(--primary);font-style:normal}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;color:var(--t2);font-size:13.5px;font-weight:500;transition:all 0.15s;position:relative}
+.nav-item:hover{background:var(--surface2);color:var(--t1)}
+.nav-item.active{background:var(--primary-dim);color:var(--primary)}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:0.85}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:50px;padding:2px 7px;font-size:11px;font-weight:600}
+.nav-section{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.8px;padding:16px 12px 6px}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.sidebar-user{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px;border-radius:var(--radius);transition:background 0.15s}
+.sidebar-user:hover{background:var(--surface2)}
+.avatar{width:32px;height:32px;background:var(--primary-dim);border:1px solid rgba(14,224,122,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-info .name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-info .role{font-size:11px;color:var(--t3)}
+
+/* ── MAIN ── */
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);gap:16px;flex-shrink:0}
+.topbar-title{flex:1}
+.topbar-title h2{font-size:17px;font-weight:700;letter-spacing:-0.3px}
+.topbar-title p{font-size:12px;color:var(--t2);margin-top:1px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.btn-ghost{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;color:var(--t2);font-family:var(--font);font-size:13px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.btn-ghost:hover{border-color:var(--border2);color:var(--t1)}
+.btn-ghost svg{width:15px;height:15px}
+.btn-add{background:var(--primary);border:none;border-radius:var(--radius);padding:9px 16px;color:#0C0F1A;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity 0.15s}
+.btn-add:hover{opacity:0.9}
+.btn-add svg{width:15px;height:15px}
+.alert-btn{position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);transition:all 0.15s}
+.alert-btn:hover{color:var(--t1);border-color:var(--border2)}
+.alert-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--surface)}
+.alert-btn svg{width:16px;height:16px}
+
+/* ── PAGES ── */
+.page{display:none;flex:1;overflow-y:auto;padding:28px}
+.page.active{display:block}
+
+/* ── DASHBOARD ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);margin-bottom:10px}
+.stat-value{font-size:24px;font-weight:700;letter-spacing:-0.8px;margin-bottom:4px}
+.stat-sub{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:4px}
+.stat-sub .up{color:var(--primary)}
+.stat-sub .down{color:var(--red)}
+.stat-icon{float:right;width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-top:-4px}
+.stat-icon svg{width:18px;height:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.grid-3{display:grid;grid-template-columns:1.3fr 0.7fr 1fr;gap:14px;margin-bottom:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.card-title span{color:var(--t2);font-size:12px;font-weight:400}
+
+/* Budget bar */
+.budget-section{margin-bottom:16px}
+.budget-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.budget-pct{font-size:28px;font-weight:700;color:var(--amber);letter-spacing:-1px}
+.budget-detail{text-align:right}
+.budget-detail .spent{font-size:15px;font-weight:600}
+.budget-detail .of{font-size:12px;color:var(--t2)}
+.progress-track{height:10px;background:var(--surface2);border-radius:50px;overflow:hidden}
+.progress-fill{height:100%;border-radius:50px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.progress-fill.warning{background:linear-gradient(90deg,var(--amber),#FF7043)}
+.progress-fill.ok{background:var(--primary)}
+.progress-fill.danger{background:var(--red)}
+.budget-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--t3)}
+
+/* Category legend */
+.cat-legend{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.cat-row{display:flex;align-items:center;gap:10px}
+.cat-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.cat-name{flex:1;font-size:13px;color:var(--t2)}
+.cat-pct{font-size:12px;font-weight:600;color:var(--t1)}
+.cat-amount{font-size:12px;color:var(--t3);margin-left:4px}
+
+/* Transactions list */
+.tx-list{display:flex;flex-direction:column;gap:2px}
+.tx-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius);transition:background 0.12s;cursor:default}
+.tx-item:hover{background:var(--surface2)}
+.tx-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.tx-info{flex:1;min-width:0}
+.tx-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-date{font-size:11px;color:var(--t3);margin-top:1px}
+.tx-amount{font-size:14px;font-weight:700;flex-shrink:0}
+.tx-amount.exp{color:var(--red)}
+.tx-amount.rev{color:var(--primary)}
+
+/* Alerts card */
+.alert-item{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:var(--radius);margin-bottom:8px;border:1px solid}
+.alert-item.warning{background:var(--amber-dim);border-color:rgba(255,181,71,0.15)}
+.alert-item.critical{background:var(--red-dim);border-color:rgba(255,94,94,0.15)}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.alert-msg{font-size:12.5px;color:var(--t1);line-height:1.5}
+.alert-time{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* ── EXPENSES PAGE ── */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;color:var(--t1);font-family:var(--font);font-size:13px;cursor:pointer;outline:none}
+.filter-select:hover{border-color:var(--border2)}
+.search-input{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;color:var(--t1);font-family:var(--font);font-size:13px;width:220px;outline:none}
+.search-input:focus{border-color:rgba(14,224,122,0.3)}
+.search-input::placeholder{color:var(--t3)}
+.expenses-total-bar{display:flex;gap:14px;margin-bottom:20px}
+.total-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1}
+.total-chip .tc-label{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);margin-bottom:5px;font-weight:600}
+.total-chip .tc-value{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);text-align:left;background:var(--surface2)}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+td{padding:13px 16px;font-size:13.5px}
+.cat-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;font-size:11.5px;font-weight:500}
+.td-actions{display:flex;align-items:center;gap:6px;opacity:0}
+tr:hover .td-actions{opacity:1}
+.ic-btn{background:var(--surface);border:1px solid var(--border);border-radius:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);transition:all 0.12s}
+.ic-btn:hover{color:var(--t1);border-color:var(--border2)}
+.ic-btn svg{width:14px;height:14px}
+.ic-btn.del:hover{color:var(--red);border-color:rgba(255,94,94,0.3)}
+
+/* ── SAVINGS PAGE ── */
+.savings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.savings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;transition:border-color 0.15s}
+.savings-card:hover{border-color:var(--border2)}
+.sc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.sc-name{font-size:15px;font-weight:700;letter-spacing:-0.2px}
+.sc-deadline{font-size:11px;color:var(--t3);margin-top:3px}
+.sc-badge{padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600}
+.sc-badge.done{background:var(--primary-dim);color:var(--primary);border:1px solid rgba(14,224,122,0.2)}
+.sc-badge.active{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(91,138,244,0.2)}
+.sc-amounts{display:flex;justify-content:space-between;margin-bottom:10px}
+.sc-current{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.sc-target{font-size:13px;color:var(--t2);margin-top:6px}
+.sc-pct{font-size:13px;font-weight:600;color:var(--t2)}
+.sc-track{height:8px;background:var(--surface2);border-radius:50px;overflow:hidden;margin-bottom:16px}
+.sc-fill{height:100%;border-radius:50px}
+.sc-fill.done-fill{background:var(--primary)}
+.sc-fill.active-fill{background:var(--blue)}
+.sc-fill.amber-fill{background:var(--amber)}
+.sc-actions{display:flex;gap:8px}
+.btn-deposit{flex:1;background:var(--primary-dim);border:1px solid rgba(14,224,122,0.2);border-radius:var(--radius);padding:9px;color:var(--primary);font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-deposit:hover{background:var(--primary-dim2)}
+.btn-del-s{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--t3);font-family:var(--font);font-size:12.5px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:4px}
+.btn-del-s:hover{color:var(--red);border-color:rgba(255,94,94,0.2)}
+.btn-del-s svg{width:14px;height:14px}
+.add-goal-card{background:var(--surface);border:2px dashed var(--border);border-radius:var(--radius-lg);padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;min-height:200px;gap:10px;color:var(--t3)}
+.add-goal-card:hover{border-color:rgba(14,224,122,0.3);color:var(--primary);background:var(--primary-dim)}
+.add-goal-card svg{width:28px;height:28px}
+.add-goal-card span{font-size:13px;font-weight:500}
+
+/* ── CHAT PAGE ── */
+.chat-layout{display:flex;height:calc(100vh - 64px - 56px);gap:0}
+.chat-main{flex:1;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.chat-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.chat-avatar{width:38px;height:38px;background:var(--primary-dim);border:1px solid rgba(14,224,122,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.chat-avatar svg{width:20px;height:20px;color:var(--primary)}
+.chat-info .cname{font-size:14px;font-weight:700}
+.chat-info .cstatus{font-size:11px;color:var(--primary);display:flex;align-items:center;gap:4px}
+.cstatus-dot{width:6px;height:6px;background:var(--primary);border-radius:50%}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;max-width:85%}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.msg-avatar.ai{background:var(--primary-dim);border:1px solid rgba(14,224,122,0.2);color:var(--primary)}
+.msg-avatar.me{background:var(--surface2);border:1px solid var(--border);color:var(--t2)}
+.msg-bubble{padding:11px 15px;border-radius:12px;font-size:13.5px;line-height:1.6}
+.msg.ai .msg-bubble{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:4px}
+.msg.user .msg-bubble{background:var(--primary-dim);border:1px solid rgba(14,224,122,0.2);color:var(--t1);border-top-right-radius:4px}
+.msg-bubble strong{color:var(--primary);font-weight:600}
+.msg-bubble .chip{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:12px;margin-top:6px}
+.typing{display:flex;align-items:center;gap:4px;padding:14px 16px}
+.typing-dot{width:7px;height:7px;background:var(--t3);border-radius:50%;animation:bounce 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+.chat-input-area{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end}
+.chat-suggestions{display:flex;gap:8px;padding:10px 16px 0;flex-wrap:wrap}
+.suggestion-chip{background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:6px 13px;font-size:12px;color:var(--t2);cursor:pointer;transition:all 0.15s}
+.suggestion-chip:hover{border-color:rgba(14,224,122,0.3);color:var(--primary);background:var(--primary-dim)}
+.chat-textarea{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;color:var(--t1);font-family:var(--font);font-size:13.5px;resize:none;outline:none;min-height:42px;max-height:120px;line-height:1.5}
+.chat-textarea:focus{border-color:rgba(14,224,122,0.3)}
+.chat-textarea::placeholder{color:var(--t3)}
+.send-btn{width:40px;height:40px;background:var(--primary);border:none;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;flex-shrink:0}
+.send-btn:hover{opacity:0.9}
+.send-btn svg{width:18px;height:18px;color:#0C0F1A}
+
+/* ── REVENUES PAGE ── */
+/* Uses same table styles as expenses */
+
+/* ── PROFILE PAGE ── */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.profile-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px}
+.profile-header{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.profile-avatar{width:68px;height:68px;background:var(--primary-dim);border:2px solid rgba(14,224,122,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--primary)}
+.profile-info h3{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.profile-info p{font-size:13px;color:var(--t2);margin-top:3px}
+.field-group{margin-bottom:18px}
+.field-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--t3);margin-bottom:8px}
+.field-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;color:var(--t1);font-family:var(--font);font-size:13.5px;outline:none;transition:border-color 0.2s}
+.field-input:focus{border-color:rgba(14,224,122,0.35)}
+.btn-save{background:var(--primary);border:none;border-radius:var(--radius);padding:11px 24px;color:#0C0F1A;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s;margin-top:8px}
+.btn-save:hover{opacity:0.9}
+.stats-personal{display:flex;flex-direction:column;gap:12px}
+.personal-stat{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.personal-stat:last-child{border-bottom:none}
+.ps-label{font-size:13px;color:var(--t2)}
+.ps-value{font-size:14px;font-weight:700}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:32px;width:420px;position:relative}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.modal-header h3{font-size:17px;font-weight:700;letter-spacing:-0.3px}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);transition:all 0.15s}
+.modal-close:hover{color:var(--t1);border-color:var(--border2)}
+.modal-close svg{width:16px;height:16px}
+.modal-footer{display:flex;gap:10px;margin-top:24px}
+.btn-cancel{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;color:var(--t2);font-family:var(--font);font-size:13.5px;cursor:pointer;transition:all 0.15s}
+.btn-cancel:hover{color:var(--t1);border-color:var(--border2)}
+.btn-confirm{flex:1;background:var(--primary);border:none;border-radius:var(--radius);padding:12px;color:#0C0F1A;font-family:var(--font);font-size:13.5px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+.btn-confirm:hover{opacity:0.9}
+
+/* SVG chart */
+.donut-wrap{display:flex;align-items:center;justify-content:center;padding:8px 0}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:14px 18px;font-size:13px;color:var(--t1);z-index:9999;display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success .toast-dot{background:var(--primary)}
+.toast.warning .toast-dot{background:var(--amber)}
+.toast-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Month selector */
+.month-pills{display:flex;gap:6px;margin-bottom:20px}
+.month-pill{padding:6px 14px;border-radius:50px;font-size:12px;cursor:pointer;border:1px solid var(--border);color:var(--t2);transition:all 0.15s}
+.month-pill.active{background:var(--primary-dim);border-color:rgba(14,224,122,0.25);color:var(--primary);font-weight:600}
+.month-pill:hover:not(.active){border-color:var(--border2);color:var(--t1)}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════ LOGIN ════════════════ -->
+<div id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M12 6v6l4 2"/><path d="M8 14c.8 1.2 2 2 4 2s3.2-.8 4-2"/></svg></div>
+      <span>Budget<em>Smart</em></span>
+    </div>
+    <h1>Bienvenue 👋</h1>
+    <p>Connectez-vous pour gérer votre budget intelligent</p>
+    <div class="form-group">
+      <label>Adresse email</label>
+      <input type="email" placeholder="alice@exemple.com" id="login-email" value="alice@exemple.com">
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" placeholder="••••••••" id="login-pass" value="MonMotDePasse123!">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Se connecter</button>
+    <div class="login-footer">Pas encore de compte ? <a href="#" onclick="doLogin()">Créer un compte</a></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ APP ════════════════ -->
+<div id="app">
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M12 6v6l4 2"/><path d="M8 14c.8 1.2 2 2 4 2s3.2-.8 4-2"/></svg></div>
+          <span>Budget<em>Smart</em></span>
+        </div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-section">Principal</div>
+        <div class="nav-item active" onclick="showPage('dashboard',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+          <span class="nav-badge">2</span>
+        </div>
+        <div class="nav-section">Finances</div>
+        <div class="nav-item" onclick="showPage('expenses',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          Dépenses
+        </div>
+        <div class="nav-item" onclick="showPage('revenues',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          Revenus
+        </div>
+        <div class="nav-item" onclick="showPage('savings',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7V4H5v3M5 20h14M9 10v10M15 10v10"/><path d="M12 7v3"/></svg>
+          Épargne
+        </div>
+        <div class="nav-section">Assistant</div>
+        <div class="nav-item" onclick="showPage('chat',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Assistant IA
+        </div>
+        <div class="nav-item" onclick="showPage('profile',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Profil
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" onclick="showPage('profile',null)">
+          <div class="avatar">AD</div>
+          <div class="user-info">
+            <div class="name">Alice Dupont</div>
+            <div class="role">Budget : 2 000 €/mois</div>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);flex-shrink:0"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-title">
+          <h2 id="page-title">Tableau de bord</h2>
+          <p id="page-sub">Mai 2025 · Résumé du mois</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Mai 2025
+          </button>
+          <div class="alert-btn" onclick="showToast('2 alertes budgétaires non lues','warning')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <div class="alert-dot"></div>
+          </div>
+          <button class="btn-add" id="add-btn" onclick="openModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+      <!-- ── DASHBOARD PAGE ── -->
+      <div class="page active" id="page-dashboard">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div class="stat-label">Revenus</div>
+              <div class="stat-icon" style="background:var(--primary-dim)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+              </div>
+            </div>
+            <div class="stat-value" style="color:var(--primary)">2 350 €</div>
+            <div class="stat-sub"><span class="up">▲ +12%</span> vs mois dernier</div>
+          </div>
+          <div class="stat-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div class="stat-label">Dépenses</div>
+              <div class="stat-icon" style="background:var(--red-dim)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--red)"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+              </div>
+            </div>
+            <div class="stat-value" style="color:var(--red)">1 840 €</div>
+            <div class="stat-sub"><span class="down">▲ +8%</span> vs mois dernier</div>
+          </div>
+          <div class="stat-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div class="stat-label">Balance</div>
+              <div class="stat-icon" style="background:var(--blue-dim)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--blue)"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+            <div class="stat-value" style="color:var(--blue)">+ 510 €</div>
+            <div class="stat-sub">Revenus − Dépenses</div>
+          </div>
+          <div class="stat-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div class="stat-label">Épargne totale</div>
+              <div class="stat-icon" style="background:var(--purple-dim)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--purple)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              </div>
+            </div>
+            <div class="stat-value" style="color:var(--purple)">6 850 €</div>
+            <div class="stat-sub"><span class="up">▲ +200 €</span> ce mois</div>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="grid-3">
+          <!-- Budget Card -->
+          <div class="card">
+            <div class="card-title">Budget mensuel <span>Mai 2025</span></div>
+            <div class="budget-section">
+              <div class="budget-header">
+                <div class="budget-pct">92%</div>
+                <div class="budget-detail">
+                  <div class="spent">1 840 €</div>
+                  <div class="of">sur 2 000 €</div>
+                </div>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill warning" style="width:92%"></div>
+              </div>
+              <div class="budget-labels"><span>0 €</span><span>80%</span><span>2 000 €</span></div>
+            </div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--amber-dim);border:1px solid rgba(255,181,71,0.15);border-radius:8px">
+                <span style="font-size:12.5px;color:var(--amber)">⚠ Alerte 80% dépassée</span>
+                <span style="font-size:11px;color:var(--t3)">10 mai</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--red-dim);border:1px solid rgba(255,94,94,0.15);border-radius:8px">
+                <span style="font-size:12.5px;color:var(--red)">🔴 Alerte 90% dépassée</span>
+                <span style="font-size:11px;color:var(--t3)">11 mai</span>
+              </div>
+            </div>
+            <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--t2);line-height:1.5">
+              Il vous reste <strong style="color:var(--t1)">160 €</strong> pour le reste du mois. À ce rythme, le budget sera dépassé d'ici <strong style="color:var(--amber)">2 jours</strong>.
+            </div>
+          </div>
+
+          <!-- Donut chart -->
+          <div class="card">
+            <div class="card-title">Par catégorie</div>
+            <div class="donut-wrap">
+              <svg width="130" height="130" viewBox="0 0 130 130">
+                <circle cx="65" cy="65" r="48" fill="none" stroke="var(--surface2)" stroke-width="18"/>
+                <!-- Logement 43% -->
+                <circle cx="65" cy="65" r="48" fill="none" stroke="#5B8AF4" stroke-width="18"
+                  stroke-dasharray="129.6 301.4" stroke-dashoffset="0" transform="rotate(-90 65 65)"/>
+                <!-- Alimentation 34% -->
+                <circle cx="65" cy="65" r="48" fill="none" stroke="#0EE07A" stroke-width="18"
+                  stroke-dasharray="102.4 328.6" stroke-dashoffset="-129.6" transform="rotate(-90 65 65)"/>
+                <!-- Loisirs 16% -->
+                <circle cx="65" cy="65" r="48" fill="none" stroke="#A78BFA" stroke-width="18"
+                  stroke-dasharray="48.2 382.8" stroke-dashoffset="-232" transform="rotate(-90 65 65)"/>
+                <!-- Transport 7% -->
+                <circle cx="65" cy="65" r="48" fill="none" stroke="#FFB547" stroke-width="18"
+                  stroke-dasharray="21.1 409.9" stroke-dashoffset="-280.2" transform="rotate(-90 65 65)"/>
+                <text x="65" y="60" text-anchor="middle" font-family="Outfit" font-size="20" font-weight="700" fill="var(--t1)">1840</text>
+                <text x="65" y="76" text-anchor="middle" font-family="Outfit" font-size="10" fill="var(--t3)">dépenses €</text>
+              </svg>
+            </div>
+            <div class="cat-legend">
+              <div class="cat-row"><div class="cat-dot" style="background:#5B8AF4"></div><span class="cat-name">Logement</span><span class="cat-pct">43%</span><span class="cat-amount">800 €</span></div>
+              <div class="cat-row"><div class="cat-dot" style="background:#0EE07A"></div><span class="cat-name">Alimentation</span><span class="cat-pct">34%</span><span class="cat-amount">620 €</span></div>
+              <div class="cat-row"><div class="cat-dot" style="background:#A78BFA"></div><span class="cat-name">Loisirs</span><span class="cat-pct">16%</span><span class="cat-amount">290 €</span></div>
+              <div class="cat-row"><div class="cat-dot" style="background:#FFB547"></div><span class="cat-name">Transport</span><span class="cat-pct">7%</span><span class="cat-amount">130 €</span></div>
+            </div>
+          </div>
+
+          <!-- Recent transactions -->
+          <div class="card">
+            <div class="card-title">Dernières transactions <span onclick="showPage('expenses',document.querySelector('.nav-item:nth-child(4)'))" style="cursor:pointer;color:var(--primary);font-size:12px">Voir tout →</span></div>
+            <div class="tx-list">
+              <div class="tx-item"><div class="tx-icon" style="background:var(--red-dim)">🛒</div><div class="tx-info"><div class="tx-name">Courses Monoprix</div><div class="tx-date">11 mai · Alimentation</div></div><div class="tx-amount exp">-95 €</div></div>
+              <div class="tx-item"><div class="tx-icon" style="background:var(--primary-dim)">💼</div><div class="tx-info"><div class="tx-name">Salaire mai</div><div class="tx-date">1 mai · Salaire</div></div><div class="tx-amount rev">+2 000 €</div></div>
+              <div class="tx-item"><div class="tx-icon" style="background:var(--purple-dim)">🎮</div><div class="tx-info"><div class="tx-name">Netflix + Spotify</div><div class="tx-date">8 mai · Loisirs</div></div><div class="tx-amount exp">-24 €</div></div>
+              <div class="tx-item"><div class="tx-icon" style="background:var(--amber-dim)">🚇</div><div class="tx-info"><div class="tx-name">Pass Navigo</div><div class="tx-date">5 mai · Transport</div></div><div class="tx-amount exp">-86 €</div></div>
+              <div class="tx-item"><div class="tx-icon" style="background:var(--blue-dim)">🏠</div><div class="tx-info"><div class="tx-name">Loyer mai</div><div class="tx-date">3 mai · Logement</div></div><div class="tx-amount exp">-800 €</div></div>
+              <div class="tx-item"><div class="tx-icon" style="background:var(--primary-dim)">💻</div><div class="tx-info"><div class="tx-name">Mission freelance</div><div class="tx-date">2 mai · Freelance</div></div><div class="tx-amount rev">+350 €</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EXPENSES PAGE ── -->
+      <div class="page" id="page-expenses">
+        <div class="month-pills">
+          <div class="month-pill">Fév</div>
+          <div class="month-pill">Mar</div>
+          <div class="month-pill">Avr</div>
+          <div class="month-pill active">Mai</div>
+        </div>
+        <div class="expenses-total-bar">
+          <div class="total-chip"><div class="tc-label">Total dépensé</div><div class="tc-value" style="color:var(--red)">1 840 €</div></div>
+          <div class="total-chip"><div class="tc-label">Nombre de transactions</div><div class="tc-value">14</div></div>
+          <div class="total-chip"><div class="tc-label">Catégorie principale</div><div class="tc-value" style="color:var(--blue)">Logement</div></div>
+          <div class="total-chip"><div class="tc-label">Moyenne par jour</div><div class="tc-value">59 €</div></div>
+        </div>
+        <div class="filter-bar">
+          <input class="search-input" placeholder="🔍  Rechercher une dépense…">
+          <select class="filter-select"><option>Toutes catégories</option><option>Alimentation</option><option>Transport</option><option>Logement</option><option>Loisirs</option></select>
+          <select class="filter-select"><option>Tous montants</option><option>Moins de 50 €</option><option>50 – 200 €</option><option>Plus de 200 €</option></select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Description</th><th>Catégorie</th><th>Date</th><th>Montant</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight:500">Loyer mai</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Virement mensuel</div></td><td><span class="cat-pill" style="background:var(--blue-dim);color:var(--blue)">🏠 Logement</span></td><td style="color:var(--t2)">03 mai 2025</td><td style="font-weight:700;color:var(--red)">800 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+              <tr><td><div style="font-weight:500">Courses Monoprix</div></td><td><span class="cat-pill" style="background:var(--red-dim);color:var(--red)">🛒 Alimentation</span></td><td style="color:var(--t2)">11 mai 2025</td><td style="font-weight:700;color:var(--red)">95 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+              <tr><td><div style="font-weight:500">Pass Navigo</div></td><td><span class="cat-pill" style="background:var(--amber-dim);color:var(--amber)">🚇 Transport</span></td><td style="color:var(--t2)">05 mai 2025</td><td style="font-weight:700;color:var(--red)">86 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+              <tr><td><div style="font-weight:500">Netflix + Spotify</div></td><td><span class="cat-pill" style="background:var(--purple-dim);color:var(--purple)">🎮 Loisirs</span></td><td style="color:var(--t2)">08 mai 2025</td><td style="font-weight:700;color:var(--red)">24 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+              <tr><td><div style="font-weight:500">Restaurant Le Marais</div></td><td><span class="cat-pill" style="background:var(--red-dim);color:var(--red)">🛒 Alimentation</span></td><td style="color:var(--t2)">09 mai 2025</td><td style="font-weight:700;color:var(--red)">68 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+              <tr><td><div style="font-weight:500">Médecin généraliste</div></td><td><span class="cat-pill" style="background:rgba(6,182,212,0.1);color:#06b6d4">💊 Santé</span></td><td style="color:var(--t2)">07 mai 2025</td><td style="font-weight:700;color:var(--red)">27 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── REVENUES PAGE ── -->
+      <div class="page" id="page-revenues">
+        <div class="month-pills">
+          <div class="month-pill">Fév</div><div class="month-pill">Mar</div><div class="month-pill">Avr</div><div class="month-pill active">Mai</div>
+        </div>
+        <div class="expenses-total-bar">
+          <div class="total-chip"><div class="tc-label">Total revenus</div><div class="tc-value" style="color:var(--primary)">2 350 €</div></div>
+          <div class="total-chip"><div class="tc-label">Nombre de sources</div><div class="tc-value">2</div></div>
+          <div class="total-chip"><div class="tc-label">Source principale</div><div class="tc-value" style="color:var(--primary)">Salaire</div></div>
+          <div class="total-chip"><div class="tc-label">vs mois dernier</div><div class="tc-value" style="color:var(--primary)">+12%</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Description</th><th>Catégorie</th><th>Date</th><th>Montant</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight:500">Salaire mai 2025</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Virement employeur</div></td><td><span class="cat-pill" style="background:var(--primary-dim);color:var(--primary)">💼 Salaire</span></td><td style="color:var(--t2)">01 mai 2025</td><td style="font-weight:700;color:var(--primary)">2 000 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+              <tr><td><div style="font-weight:500">Mission freelance – Design UI</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Client : Agence Nova</div></td><td><span class="cat-pill" style="background:rgba(16,185,129,0.1);color:#10b981">💻 Freelance</span></td><td style="color:var(--t2)">10 mai 2025</td><td style="font-weight:700;color:var(--primary)">350 €</td><td><div class="td-actions"><div class="ic-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ic-btn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="background:var(--surface);border:2px dashed var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center;margin-top:14px;cursor:pointer" onclick="openModal()" onmouseenter="this.style.borderColor='rgba(14,224,122,0.3)'" onmouseleave="this.style.borderColor='var(--border)'">
+          <div style="font-size:24px;margin-bottom:8px">＋</div>
+          <div style="font-size:14px;color:var(--t2)">Ajouter un revenu</div>
+        </div>
+      </div>
+
+      <!-- ── SAVINGS PAGE ── -->
+      <div class="page" id="page-savings">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 24px;flex:1">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);margin-bottom:4px;font-weight:600">Épargne totale</div>
+            <div style="font-size:26px;font-weight:700;color:var(--primary);letter-spacing:-0.5px">6 850 €</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 24px;flex:1">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);margin-bottom:4px;font-weight:600">Objectifs actifs</div>
+            <div style="font-size:26px;font-weight:700;letter-spacing:-0.5px">2 / 3</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 24px;flex:1">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--t3);margin-bottom:4px;font-weight:600">Prochain objectif</div>
+            <div style="font-size:18px;font-weight:700;letter-spacing:-0.3px;color:var(--amber)">MacBook Pro</div>
+            <div style="font-size:12px;color:var(--t2)">33% atteint</div>
+          </div>
+        </div>
+        <div class="savings-grid">
+          <!-- Goal 1: Done -->
+          <div class="savings-card">
+            <div class="sc-header">
+              <div><div class="sc-name">Fonds d'urgence 🔒</div><div class="sc-deadline">Complété</div></div>
+              <div class="sc-badge done">✓ Atteint</div>
+            </div>
+            <div class="sc-amounts">
+              <div><div class="sc-current" style="color:var(--primary)">5 000 €</div><div class="sc-target">sur 5 000 €</div></div>
+              <div class="sc-pct" style="color:var(--primary)">100%</div>
+            </div>
+            <div class="sc-track"><div class="sc-fill done-fill" style="width:100%"></div></div>
+            <div class="sc-actions">
+              <button class="btn-del-s" onclick="showToast('Objectif supprimé','warning')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Supprimer</button>
+            </div>
+          </div>
+          <!-- Goal 2: Active -->
+          <div class="savings-card">
+            <div class="sc-header">
+              <div><div class="sc-name">✈ Voyage Japon</div><div class="sc-deadline">Échéance : 1 déc. 2025</div></div>
+              <div class="sc-badge active">En cours</div>
+            </div>
+            <div class="sc-amounts">
+              <div><div class="sc-current" style="color:var(--blue)">850 €</div><div class="sc-target">sur 3 000 €</div></div>
+              <div class="sc-pct">28%</div>
+            </div>
+            <div class="sc-track"><div class="sc-fill active-fill" style="width:28%"></div></div>
+            <div class="sc-actions">
+              <button class="btn-deposit" onclick="showToast('Versement enregistré ✓','success')">+ Verser</button>
+              <button class="btn-del-s" onclick="showToast('Objectif supprimé','warning')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+            </div>
+          </div>
+          <!-- Goal 3: Amber -->
+          <div class="savings-card">
+            <div class="sc-header">
+              <div><div class="sc-name">💻 MacBook Pro</div><div class="sc-deadline">Échéance : 1 mars 2026</div></div>
+              <div class="sc-badge active">En cours</div>
+            </div>
+            <div class="sc-amounts">
+              <div><div class="sc-current" style="color:var(--amber)">600 €</div><div class="sc-target">sur 1 800 €</div></div>
+              <div class="sc-pct">33%</div>
+            </div>
+            <div class="sc-track"><div class="sc-fill amber-fill" style="width:33%"></div></div>
+            <div class="sc-actions">
+              <button class="btn-deposit" onclick="showToast('Versement enregistré ✓','success')">+ Verser</button>
+              <button class="btn-del-s" onclick="showToast('Objectif supprimé','warning')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+            </div>
+          </div>
+          <!-- Add goal -->
+          <div class="add-goal-card" onclick="openModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Nouvel objectif d'épargne</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CHAT PAGE ── -->
+      <div class="page" id="page-chat">
+        <div class="chat-main" style="height:calc(100vh - 140px)">
+          <div class="chat-header">
+            <div class="chat-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--primary)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="chat-info">
+              <div class="cname">Assistant BudgetSmart</div>
+              <div class="cstatus"><div class="cstatus-dot"></div>En ligne · Accès à vos données financières</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px">
+              <div class="ic-btn" title="Effacer la conversation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14H5V6"/></svg></div>
+            </div>
+          </div>
+          <div class="chat-suggestions">
+            <div class="suggestion-chip" onclick="sendSuggestion(this)">Résume mes dépenses de mai</div>
+            <div class="suggestion-chip" onclick="sendSuggestion(this)">Où puis-je économiser ?</div>
+            <div class="suggestion-chip" onclick="sendSuggestion(this)">Quand atteindrai-je mon objectif Japon ?</div>
+            <div class="suggestion-chip" onclick="sendSuggestion(this)">Compare avec le mois dernier</div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg ai">
+              <div class="msg-avatar ai">AI</div>
+              <div class="msg-bubble">Bonjour Alice 👋 Je suis votre assistant budget intelligent. J'ai accès à vos données financières de mai 2025.<br><br>Vous avez dépensé <strong>1 840 €</strong> sur un budget de <strong>2 000 €</strong> — soit <strong>92%</strong> de votre budget. Il reste <strong>160 €</strong> pour la fin du mois.</div>
+            </div>
+            <div class="msg user">
+              <div class="msg-avatar me">AD</div>
+              <div class="msg-bubble">Combien ai-je dépensé en alimentation ce mois-ci ?</div>
+            </div>
+            <div class="msg ai">
+              <div class="msg-avatar ai">AI</div>
+              <div class="msg-bubble">En mai 2025, vous avez dépensé <strong>620 €</strong> en alimentation, ce qui représente <strong>33,7%</strong> de vos dépenses totales.<br><br>C'est légèrement au-dessus de votre moyenne des 3 derniers mois (<strong>~580 €</strong>). Les postes les plus coûteux sont :<br><div class="chip">🛒 Courses : 457 €</div><div class="chip">🍽 Restaurants : 163 €</div><br>Je vous suggère de limiter les repas au restaurant à 2 fois par semaine pour économiser environ <strong>60 €/mois</strong>.</div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <textarea class="chat-textarea" id="chat-input" placeholder="Posez une question sur votre budget…" rows="1" onkeydown="handleChatKey(event)"></textarea>
+            <button class="send-btn" onclick="sendChatMessage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE PAGE ── -->
+      <div class="page" id="page-profile">
+        <div class="profile-grid">
+          <div class="profile-card">
+            <div class="profile-header">
+              <div class="profile-avatar">AD</div>
+              <div class="profile-info">
+                <h3>Alice Dupont</h3>
+                <p>Membre depuis janvier 2025</p>
+              </div>
+            </div>
+            <div class="field-group"><div class="field-label">Nom complet</div><input class="field-input" value="Alice Dupont"></div>
+            <div class="field-group"><div class="field-label">Adresse email</div><input class="field-input" value="alice@exemple.com"></div>
+            <div class="field-group"><div class="field-label">Budget mensuel (€)</div><input class="field-input" type="number" value="2000"></div>
+            <div class="field-group"><div class="field-label">Nouveau mot de passe</div><input class="field-input" type="password" placeholder="Laisser vide pour ne pas changer"></div>
+            <button class="btn-save" onclick="showToast('Profil mis à jour ✓','success')">Enregistrer les modifications</button>
+          </div>
+          <div>
+            <div class="profile-card" style="margin-bottom:14px">
+              <div class="card-title" style="margin-bottom:16px">Statistiques personnelles</div>
+              <div class="stats-personal">
+                <div class="personal-stat"><span class="ps-label">Total dépensé (cumul)</span><span class="ps-value">8 240 €</span></div>
+                <div class="personal-stat"><span class="ps-label">Total épargné (cumul)</span><span class="ps-value" style="color:var(--primary)">6 850 €</span></div>
+                <div class="personal-stat"><span class="ps-label">Mois sous budget</span><span class="ps-value">3 / 5</span></div>
+                <div class="personal-stat"><span class="ps-label">Objectifs complétés</span><span class="ps-value">1</span></div>
+                <div class="personal-stat"><span class="ps-label">Économies moyennes/mois</span><span class="ps-value" style="color:var(--blue)">+420 €</span></div>
+              </div>
+            </div>
+            <div class="profile-card">
+              <div class="card-title" style="margin-bottom:16px">Catégories personnalisées</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius)">
+                  <div style="width:10px;height:10px;border-radius:3px;background:#ef4444"></div>
+                  <span style="flex:1;font-size:13px">Alimentation</span>
+                  <span style="font-size:11px;color:var(--t3);background:var(--red-dim);padding:3px 8px;border-radius:4px">EXPENSE</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius)">
+                  <div style="width:10px;height:10px;border-radius:3px;background:#5B8AF4"></div>
+                  <span style="flex:1;font-size:13px">Logement</span>
+                  <span style="font-size:11px;color:var(--t3);background:var(--blue-dim);padding:3px 8px;border-radius:4px">EXPENSE</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius)">
+                  <div style="width:10px;height:10px;border-radius:3px;background:#0EE07A"></div>
+                  <span style="flex:1;font-size:13px">Salaire</span>
+                  <span style="font-size:11px;color:var(--t3);background:var(--primary-dim);padding:3px 8px;border-radius:4px">REVENUE</span>
+                </div>
+                <button class="btn-ghost" style="margin-top:4px;width:100%;justify-content:center" onclick="showToast('Catégorie ajoutée','success')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>
+                  Nouvelle catégorie
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end main-content -->
+  </div><!-- end app-layout -->
+</div><!-- end app -->
+
+<!-- ════════ MODAL ════════ -->
+<div class="modal-overlay" id="modal" onclick="closeModalOut(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Ajouter une dépense</h3>
+      <div class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+    </div>
+    <div class="form-group"><label>Montant (€)</label><input type="number" class="field-input" placeholder="0.00"></div>
+    <div class="form-group"><label>Description</label><input class="field-input" placeholder="Ex : Courses Carrefour"></div>
+    <div class="form-group">
+      <label>Catégorie</label>
+      <select class="field-input" style="cursor:pointer">
+        <option>🛒 Alimentation</option>
+        <option>🚇 Transport</option>
+        <option>🏠 Logement</option>
+        <option>🎮 Loisirs</option>
+        <option>💊 Santé</option>
+        <option>📦 Autre</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Date</label><input type="date" class="field-input" value="2025-05-11"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-confirm" onclick="submitModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+const pages = {
+  dashboard: { title: 'Tableau de bord',       sub: 'Mai 2025 · Résumé du mois',    btn: 'Ajouter une dépense' },
+  expenses:  { title: 'Dépenses',               sub: 'Mai 2025 · 14 transactions',   btn: 'Nouvelle dépense'    },
+  revenues:  { title: 'Revenus',                sub: 'Mai 2025 · 2 sources',         btn: 'Nouveau revenu'      },
+  savings:   { title: 'Épargne',                sub: '3 objectifs · 6 850 € épargnés', btn: 'Nouvel objectif'   },
+  chat:      { title: 'Assistant IA',           sub: 'Analysez vos finances en langage naturel', btn: null     },
+  profile:   { title: 'Mon Profil',             sub: 'Gérer vos informations personnelles',    btn: null       },
+};
+
+function doLogin(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+
+function showPage(id, navEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+  const p = pages[id];
+  document.getElementById('page-title').textContent = p.title;
+  document.getElementById('page-sub').textContent = p.sub;
+  const addBtn = document.getElementById('add-btn');
+  if(p.btn){ addBtn.style.display='flex'; addBtn.childNodes[1].textContent=p.btn; }
+  else addBtn.style.display='none';
+  const mTitle = {expenses:'Ajouter une dépense',revenues:'Ajouter un revenu',savings:'Nouvel objectif d\'épargne',dashboard:'Ajouter une dépense'};
+  if(mTitle[id]) document.getElementById('modal-title').textContent=mTitle[id];
+}
+
+function openModal(){ document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function closeModalOut(e){ if(e.target===document.getElementById('modal')) closeModal(); }
+function submitModal(){
+  closeModal();
+  showToast('Enregistré avec succès ✓','success');
+}
+
+let toastTimer;
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  const dot = t.querySelector('.toast-dot');
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'toast '+type+' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 3000);
+}
+
+// CHAT
+const aiReplies = [
+  "D'après vos données, votre solde net ce mois-ci est de <strong>+510 €</strong>. C'est une bonne gestion, mais votre budget alimentation dépasse la norme recommandée de 15-20%.",
+  "Pour atteindre votre objectif Voyage Japon à temps (1er déc.), vous devez épargner <strong>215 €/mois</strong>. À votre rythme actuel de 200 €/mois, vous aurez un léger retard.",
+  "Comparé à avril, vos dépenses ont <strong>augmenté de 8%</strong>. La principale hausse concerne les loisirs (+42 €). Je recommande de fixer un plafond mensuel pour cette catégorie.",
+  "Vos 3 principaux postes d'économies potentiels : <strong>Restaurants</strong> (-60 €/mois), <strong>Abonnements non utilisés</strong> (-15 €/mois), <strong>Transport</strong> (-20 €/mois). Total possible : <strong>95 €/mois</strong>.",
+];
+let aiIdx = 0;
+
+function sendChatMessage(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  addChatMsg('user', text);
+  input.value='';
+  setTimeout(()=>{
+    const dot = document.createElement('div');
+    dot.className='msg ai'; dot.id='typing-msg';
+    dot.innerHTML='<div class="msg-avatar ai">AI</div><div class="msg-bubble"><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+    document.getElementById('chat-messages').appendChild(dot);
+    scrollChat();
+    setTimeout(()=>{
+      dot.remove();
+      const reply = aiReplies[aiIdx % aiReplies.length];
+      aiIdx++;
+      addChatMsg('ai', reply, true);
+    }, 1200);
+  }, 300);
+}
+
+function sendSuggestion(el){
+  document.getElementById('chat-input').value = el.textContent;
+  sendChatMessage();
+}
+
+function addChatMsg(role, text, isHtml=false){
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className='msg '+role;
+  const lbl = role==='ai'?'AI':'AD';
+  div.innerHTML=`<div class="msg-avatar ${role}">${lbl}</div><div class="msg-bubble">${isHtml?text:escHtml(text)}</div>`;
+  msgs.appendChild(div);
+  scrollChat();
+}
+
+function scrollChat(){
+  const msgs = document.getElementById('chat-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function handleChatKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChatMessage(); }
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
