@@ -1,11 +1,10 @@
 workflows:
-  android-release:
-    name: BudgetSmart Android APK
-    max_build_duration: 60
+  android-apk:
+    name: BudgetSmart — Android APK
+    max_build_duration: 90
     environment:
-      node: 24
-      groups:
-        - expo_credentials
+      node: latest
+      java: 17
       vars:
         EXPO_PROJECT_DIR: artifacts/mobile
         COREPACK_ENABLE_STRICT: "0"
@@ -16,52 +15,41 @@ workflows:
         - pattern: main
           include: true
     scripts:
-      - name: Configuration de pnpm (Corepack)
+      - name: Activer pnpm
         script: |
           corepack enable
           corepack prepare pnpm@latest --activate
+          pnpm --version
 
-      - name: Installation des dépendances
+      - name: Installer les dépendances
         script: |
           pnpm install --no-frozen-lockfile
 
-      - name: Installation de EAS CLI
-        script: |
-          npm install -g eas-cli
-
-      - name: Vérification authentification
+      - name: Générer le projet Android natif (expo prebuild)
         script: |
           cd $EXPO_PROJECT_DIR
-          eas whoami
+          npx expo prebuild --platform android --clean --no-install
 
-      - name: Build de l'APK via EAS
+      - name: Rendre gradlew exécutable
         script: |
-          cd $EXPO_PROJECT_DIR
-          eas build --platform android --profile preview --non-interactive
+          chmod +x $EXPO_PROJECT_DIR/android/gradlew
+
+      - name: Compiler l'APK de release
+        script: |
+          cd $EXPO_PROJECT_DIR/android
+          ./gradlew assembleRelease \
+            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g" \
+            --no-daemon \
+            --stacktrace
 
     artifacts:
-      - artifacts/mobile/**/*.apk
-      - artifacts/mobile/**/*.aab
+      - artifacts/mobile/android/app/build/outputs/apk/release/*.apk
+      - artifacts/mobile/android/app/build/outputs/apk/debug/*.apk
 
-  android-local-build:
-    name: BudgetSmart Android (Local Export)
-    max_build_duration: 60
-    environment:
-      node: 24
-      vars:
-        EXPO_PROJECT_DIR: artifacts/mobile
-        COREPACK_ENABLE_STRICT: "0"
-    scripts:
-      - name: Enable pnpm
-        script: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-      - name: Install dependencies
-        script: |
-          pnpm install --no-frozen-lockfile
-      - name: Export Web Bundle
-        script: |
-          cd $EXPO_PROJECT_DIR
-          pnpm expo export --platform web --output-dir dist
-    artifacts:
-      - artifacts/mobile/dist/**
+    publishing:
+      email:
+        recipients:
+          - $CM_COMMIT_AUTHOR_EMAIL
+        notify:
+          success: true
+          failure: true
