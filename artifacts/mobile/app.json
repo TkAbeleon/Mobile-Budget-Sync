@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "mobile",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
@@ -52,7 +52,6 @@
         "projectId": "a040ed70-90de-4a15-bf1a-079175adc1c3"
       }
     },
-    "owner": "tsikynyantsa",
-    "jsEngine": "jsc"
+    "owner": "tsikynyantsa"
   }
 }

@@ -8,6 +8,7 @@ workflows:
       vars:
         EXPO_PROJECT_DIR: artifacts/mobile
         COREPACK_ENABLE_STRICT: "0"
+        NODE_ENV: production
     triggering:
       events:
         - push
