@@ -5,7 +5,7 @@ workflows:
     environment:
       node: 24
       groups:
-        - expo_credentials # Crée ce groupe dans Codemagic et ajoute EXPO_TOKEN dedans
+        - expo_credentials
       vars:
         EXPO_PROJECT_DIR: artifacts/mobile
         COREPACK_ENABLE_STRICT: "0"
@@ -23,8 +23,7 @@ workflows:
 
       - name: Installation des dépendances
         script: |
-          # --ignore-scripts évite le blocage du preinstall local
-          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm install --no-frozen-lockfile
 
       - name: Installation de EAS CLI
         script: |
@@ -32,14 +31,12 @@ workflows:
 
       - name: Vérification authentification
         script: |
-          # EAS utilise automatiquement la variable d'env EXPO_TOKEN
           cd $EXPO_PROJECT_DIR
           eas whoami
 
       - name: Build de l'APK via EAS
         script: |
           cd $EXPO_PROJECT_DIR
-          # Build sans interaction pour éviter les erreurs de terminaux CI
           eas build --platform android --profile preview --non-interactive
 
     artifacts:
@@ -61,7 +58,7 @@ workflows:
           corepack prepare pnpm@latest --activate
       - name: Install dependencies
         script: |
-          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm install --no-frozen-lockfile
       - name: Export Web Bundle
         script: |
           cd $EXPO_PROJECT_DIR
