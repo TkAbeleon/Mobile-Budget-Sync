@@ -45,11 +45,3 @@ workflows:
     artifacts:
       - artifacts/mobile/android/app/build/outputs/apk/release/*.apk
       - artifacts/mobile/android/app/build/outputs/apk/debug/*.apk
-
-    publishing:
-      email:
-        recipients:
-          - $CM_COMMIT_AUTHOR_EMAIL
-        notify:
-          success: true
-          failure: true
