@@ -1,0 +1,166 @@
+Project
+
+Develop
+
+Deploy
+
+Entities
+
+Project settings
+
+Builds
+
+ee94488e
+EAS Build is experiencing degraded performance
+
+Reason: High queue times for Android and iOS builds. All information on service status and incidents available at status.expo.dev.
+This build does not count towards your EAS Build usage.
+Android internal distribution build
+
+85f1961 · jk
+
+Profile
+
+Environment
+
+SDK version
+
+Version
+
+Fingerprint
+
+Commit
+
+Created by
+
+preview
+
+preview
+
+54.0.0
+
+a63a019
+85f1961
+tsikynyantsa account icon
+
+tsikynyantsa
+Build artifact
+
+Status
+
+Start time
+
+Wait time
+
+Queue time
+
+Build time
+
+Total time
+
+Availability
+
+Errored
+May 15, 2026 3:11 AM
+
+886ms
+
+4s
+
+6s
+
+12s
+
+14 days
+Logs
+
+Spin up build environment
+
+8ms
+
+Using image "ubuntu-22.04-jdk-17-ndk-r26b" based on "ubuntu-2204-jammy-v20250112"
+Installed software:
+- NDK 26.1.10909125
+- Node.js 20.19.2
+- Bun 1.2.4
+- Yarn 1.22.22
+- pnpm 9.15.5
+- npm 10.8.2
+- Java 17
+- node-gyp 11.1.0
+Project environment variables:
+  EAS_USE_CACHE=1
+  __API_SERVER_URL=https://api.expo.dev/
+Environment secrets:
+  EXPO_TOKEN=********
+EAS Build environment variables:
+  NVM_INC=/home/expo/.nvm/versions/node/v20.19.2/include/node
+  HOSTNAME=turtle-worker-2d712442cf9b
+  JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+  WORKER_TARBALL_URL=https://storage.googleapis.com/eas-build-worker-tarballs/worker-android-production.tar.gz
+  PWD=/usr/local/eas-build-worker
+  HOME=/home/expo
+  ANDROID_NDK_HOME=/home/expo/Android/Sdk/ndk/26.1.10909125
+  NVM_DIR=/home/expo/.nvm
+  ANDROID_HOME=/home/expo/Android/Sdk
+  SHLVL=1
+  ANDROID_SDK_ROOT=/home/expo/Android/Sdk
+  PATH=/home/expo/workingdir/bin:/home/expo/.nvm/versions/node/v20.19.2/bin:/opt/bundletool:/home/expo/Android/Sdk/build-tools/29.0.3:/home/expo/Android/Sdk/build-tools/35.0.0:/home/expo/Android/Sdk/ndk/26.1.10909125:/home/expo/Android/Sdk/cmdline-tools/tools/bin:/home/expo/Android/Sdk/tools:/home/expo/Android/Sdk/tools/bin:/home/expo/Android/Sdk/platform-tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/expo/.bun/bin
+  LOGGER_LEVEL=debug
+  NVM_BIN=/home/expo/.nvm/versions/node/v20.19.2/bin
+  EAS_BUILD_WORKER_DIR=/home/expo/eas-build-worker
+  OLDPWD=/home/expo
+  _=/home/expo/.nvm/versions/node/v20.19.2/bin/node
+  CI=1
+  MAESTRO_DRIVER_STARTUP_TIMEOUT=120000
+  MAESTRO_CLI_NO_ANALYTICS=1
+  EAS_BUILD=true
+  EAS_BUILD_RUNNER=eas-build
+  EAS_BUILD_PLATFORM=android
+  EAS_CLI_SENTRY_DSN=https://ca4734dc503543b28d55fdaf0563f61c@o30871.ingest.sentry.io/1837720
+  NVM_NODEJS_ORG_MIRROR=http://nodejs.production.caches.eas-build.internal
+  EAS_BUILD_PROFILE=preview
+  EAS_BUILD_GIT_COMMIT_HASH=85f1961f2d4d569c85272cc680afb2a94fb32b37
+  EAS_BUILD_ID=ee94488e-d956-404c-b076-2d712442cf9b
+  LANG=en_US.UTF-8
+  EAS_BUILD_WORKINGDIR=/home/expo/workingdir/build
+  EAS_BUILD_PROJECT_ID=a040ed70-90de-4a15-bf1a-079175adc1c3
+  ANDROID_CCACHE=/usr/bin/ccache
+  EAS_BUILD_MAVEN_CACHE_URL=http://maven.production.caches.eas-build.internal
+  GRADLE_OPTS=-Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false
+  EAS_BUILD_ANDROID_VERSION_CODE=1
+  EAS_BUILD_USERNAME=tsikynyantsa
+  __EAS_BUILD_ENVS_DIR=/home/expo/workingdir/env
+Builder is ready, starting build
+
+Prepare project
+
+303ms
+
+Read eas.json
+
+0ms
+
+Read package.json
+
+1ms
+
+Install dependencies
+
+481ms
+
+We detected that 'artifacts/mobile' is a pnpm workspace
+Running "pnpm install --frozen-lockfile" in /home/expo/workingdir/build directory
+Scope: all 9 workspace projects
+ERR_PNPM_LOCKFILE_CONFIG_MISMATCH  Cannot proceed with the frozen installation. The current "overrides" configuration doesn't match the value found in the lockfile
+Update your lockfile using "pnpm install --no-frozen-lockfile"
+
+pnpm install --frozen-lockfile exited with non-zero code: 1
+
+Fail job
+
+1ms
+
+Build failed
+
+pnpm install --frozen-lockfile exited with non-zero code: 1
